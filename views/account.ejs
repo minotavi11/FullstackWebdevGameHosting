@@ -1,0 +1,25 @@
+<%- include('partials/header') %>
+
+<div class="jumbotron text-center">
+  <div class="container">
+    <i class="fas fa-user fa-6x"></i>
+    <h1 class="display-3">Welcome to your account, <%= username %>!</h1>
+    <p class="secret-text">
+      This is your account page to modify credentials or interact with other users.
+    </p>
+    <a class="btn btn-light btn-lg" href="/logout" role="button">Log Out</a>
+  </div>
+</div>
+<section class="pb-5 mb-5">
+  <form action="/account" method="POST">
+
+    <div class="form-group">
+      <input type="text" class="form-control text-center" name="secret" placeholder="Share your thoughts....">
+    </div>
+    <button type="submit" class="btn btn-dark">Submit</button>
+  </form>
+  
+</section>
+
+
+  <%- include('partials/footer') %>
