@@ -7,11 +7,30 @@ import { Strategy } from "passport-local";
 import session from "express-session";
 import env from "dotenv";
 import GoogleStrategy from "passport-google-oauth2";
+import fs from "fs";
+import path from "path";
+import https from "https";
+
+
+
+///////////////////////////
 
 const app = express();
 const port = 3000;
 const saltRounds = 10; //security level of hashing
 env.config();//keep session passwords secret
+app.use((req, res, next) => {
+  res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  next();
+});
+app.use(express.static("public"));
+app.use('/game', express.static( 'game', {
+  setHeaders: (res) => {
+      res.setHeader('Cross-Origin-Opener-Policy', 'same-origin');
+      res.setHeader('Cross-Origin-Embedder-Policy', 'require-corp');
+  }
+}));
 
 app.use(
   session({
@@ -22,7 +41,7 @@ app.use(
 );
 
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static("public"));
+
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -80,6 +99,7 @@ app.get("/account", (req,res)=>{
 
   
 });
+
 app.get("/game", (req,res)=>{
 
   if(req.isAuthenticated()){
@@ -87,9 +107,8 @@ app.get("/game", (req,res)=>{
   }else{
     res.redirect("/login");
   };
-
-  
 });
+
 
 
 app.get(
@@ -254,6 +273,20 @@ passport.deserializeUser((user,cb)=>{
   cb(null, user);
   
 });
-app.listen(port, () => {
-  console.log(`Server running on  http://localhost:${port}/`);
+// app.listen(port, () => {
+//   console.log(`Server running on  http://localhost:${port}/`);
+// });
+
+// HTTPS server options
+const httpsOptions = {
+  key: fs.readFileSync('cert.key'),
+  cert: fs.readFileSync('cert.crt')
+};
+
+// Create HTTPS server
+https.createServer(httpsOptions, app).listen(3000, () => {
+  console.log('HTTPS server running on https://localhost:3000');
+  console.log('Access the game at https://localhost:3000/game');
 });
+
+

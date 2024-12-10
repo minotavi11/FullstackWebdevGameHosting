@@ -1,3 +1,5 @@
+cert.crt
+cert.key
 .env
 # Logs
 logs
